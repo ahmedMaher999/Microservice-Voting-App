@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+
+  vote:
+    build: ./vote
+    container_name: vote_service
+    ports:
+      - "9090:80"
+    env_file:
+      - ./vote/.env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: redis_service
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
