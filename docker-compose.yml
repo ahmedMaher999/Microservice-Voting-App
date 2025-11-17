@@ -3,14 +3,25 @@ version: '3.9'
 services:
 
   vote:
-    build: ./vote
+    build:
+      context: ./vote
+      dockerfile: Dockerfile
+      args:
+        # 1. Tell the Dockerfile to build in 'dev' mode
+        - APP_ENV=dev
+        # 2. Pass build-time ARGs (using defaults is also fine)
+        - REDIS_HOST=redis 
+        - REDIS_PORT=6379
+        - OPTION_A=Cats
+        - OPTION_B=Dogs
+      
     container_name: vote_service
+    
     ports:
       - "9090:80"
-    env_file:
-      - ./vote/.env
     depends_on:
       - redis
+    restart: always
 
   redis:
     image: redis:7

@@ -1,0 +1,56 @@
+# OS / Editor junk
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+.DS_Store
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Node.js dependencies
+node_modules/
+
+# Dotfiles
+.env
+*.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+logs/
+
+# Docker stuff
+docker-compose.override.yml
+*.pid
+
+# Compiled output
+bin/
+obj/
+out/
+
+# Cache
+.cache/
+.npm/
+.pnpm-store/
+
+# IDE configs
+.vscode/
+.idea/
+
+# For seed service
+*.txt
+*.data
