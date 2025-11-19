@@ -23,6 +23,23 @@ services:
       - redis
     restart: always
 
+  result:
+    build:
+      context: ./result
+      dockerfile: Dockerfile
+      args:
+        - RESULT_PORT=4000
+        - PGUSER=postgres
+        - PGPASSWORD=postgres
+        - PGDATABASE=postgres
+        - PGHOST=db
+        - PGPORT=5432
+    container_name: result_service
+    ports:
+      - "9091:4000"
+    depends_on:
+      - db
+
   redis:
     image: redis:7
     container_name: redis_service
@@ -31,5 +48,20 @@ services:
     volumes:
       - redis_data:/data
 
+  db:
+    image: postgres:15-alpine
+    container_name: db_service
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
 volumes:
   redis_data:
+  db_data:
+
+

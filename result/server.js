@@ -2,11 +2,12 @@ var express = require('express'),
     async = require('async'),
     { Pool } = require('pg'),
     cookieParser = require('cookie-parser'),
+    path = require('path'), // Was missing 
     app = express(),
     server = require('http').Server(app),
     io = require('socket.io')(server);
 
-var port = process.env.PORT || 4000;
+var port = process.env.RESULT_PORT || 4000;
 
 io.on('connection', function (socket) {
 
@@ -17,9 +18,19 @@ io.on('connection', function (socket) {
   });
 });
 
+// <--- UPDATED DATABASE CONNECTION STRATEGY --->
+var username = process.env.PGUSER || 'postgres';
+var password = process.env.PGPASSWORD || 'postgres';
+var database = process.env.PGDATABASE || 'postgres';
+var host = process.env.PGHOST || 'db';
+var dbPort = process.env.PGPORT || 5432;
+
+var connectionString = `postgres://${username}:${password}@${host}:${dbPort}/${database}`;
+
 var pool = new Pool({
-  connectionString: 'postgres://postgres:postgres@db/postgres'
+  connectionString: connectionString
 });
+
 
 async.retry(
   {times: 1000, interval: 1000},
@@ -64,7 +75,7 @@ function collectVotesFromResult(result) {
 }
 
 app.use(cookieParser());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true })); // Added extended: true to fix deprecation warning
 app.use(express.static(__dirname + '/views'));
 
 app.get('/', function (req, res) {
