@@ -19,11 +19,11 @@ io.on('connection', function (socket) {
 });
 
 // <--- UPDATED DATABASE CONNECTION STRATEGY --->
-var username = process.env.PGUSER || 'postgres';
-var password = process.env.PGPASSWORD || 'postgres';
-var database = process.env.PGDATABASE || 'postgres';
-var host = process.env.PGHOST || 'db';
-var dbPort = process.env.PGPORT || 5432;
+var username = process.env.POSTGRES_USER || 'postgres';
+var password = process.env.POSTGRES_PASSWORD|| 'postgres';
+var database = process.env.POSTGRES_DB || 'postgres';
+var host = process.env.POSTGRES_HOST || 'db';
+var dbPort = process.env.POSTGRES_PORT || 5432;
 
 var connectionString = `postgres://${username}:${password}@${host}:${dbPort}/${database}`;
 

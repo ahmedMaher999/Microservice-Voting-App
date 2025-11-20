@@ -16,8 +16,21 @@ namespace Worker
         {
             try
             {
-                var pgsql = OpenDbConnection("Server=db;Username=postgres;Password=postgres;");
-                var redisConn = OpenRedisConnection("redis");
+                // ---------------------------------------------------------
+                // CONFIGURATION: Read from Environment Variables
+                // ---------------------------------------------------------
+                string redisHost = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis";
+                
+                string pgHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "db";
+                string pgUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
+                string pgPass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
+                string pgDb = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "postgres";
+
+                string pgConnectionString = $"Server={pgHost};Username={pgUser};Password={pgPass};Database={pgDb};";
+                // ---------------------------------------------------------
+
+                var pgsql = OpenDbConnection(pgConnectionString);
+                var redisConn = OpenRedisConnection(redisHost);
                 var redis = redisConn.GetDatabase();
 
                 // Keep alive is not implemented in Npgsql yet. This workaround was recommended:
@@ -34,7 +47,7 @@ namespace Worker
                     // Reconnect redis if down
                     if (redisConn == null || !redisConn.IsConnected) {
                         Console.WriteLine("Reconnecting Redis");
-                        redisConn = OpenRedisConnection("redis");
+                        redisConn = OpenRedisConnection(redisHost);
                         redis = redisConn.GetDatabase();
                     }
                     string json = redis.ListLeftPopAsync("votes").Result;
@@ -46,7 +59,7 @@ namespace Worker
                         if (!pgsql.State.Equals(System.Data.ConnectionState.Open))
                         {
                             Console.WriteLine("Reconnecting DB");
-                            pgsql = OpenDbConnection("Server=db;Username=postgres;Password=postgres;");
+                            pgsql = OpenDbConnection(pgConnectionString);
                         }
                         else
                         { // Normal +1 vote requested
