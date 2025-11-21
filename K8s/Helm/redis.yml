@@ -1,0 +1,27 @@
+# Configuration for the Bitnami Redis Chart
+
+# Architecture: standalone (1 node).
+architecture: standalone
+
+auth:
+  # Disable authentication (no password needed)
+  enabled: false
+
+master:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+  persistence:
+    enabled: true
+    size: 1Gi 
+    storageClass: "managed-csi"
+
+  # Security: Only allow traffic from within the cluster
+  networkPolicy:
+    enabled: true
+    allowExternal: false

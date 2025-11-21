@@ -1,0 +1,3 @@
+environment = "prod"
+location    = "uaenorth"
+node_count  = 2

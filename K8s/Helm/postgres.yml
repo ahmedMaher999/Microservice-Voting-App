@@ -1,0 +1,44 @@
+# Configuration for the Bitnami PostgreSQL Chart
+
+global:
+  postgresql:
+    auth:
+      # 1. Tell Helm to use the secret named "postgres-secret"
+      existingSecret: "postgres-secret"
+
+      # 2. Tell Helm which KEY inside that secret holds the admin password
+      secretKeys:
+        adminPasswordKey: "postgres-password"
+
+      username: "postgres"
+      database: "voting"
+
+# Architecture: standalone (1 node).
+# To scale to high availability later, change this to 'replication'.
+architecture: standalone
+
+primary:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  
+  persistence:
+    enabled: true
+    # Reduced to 1Gi for dev/demo usage
+    size: 1Gi
+    storageClass: "managed-csi"
+
+  # Security: Network Policy
+  networkPolicy:
+    enabled: true
+    allowExternal: false
+
+# Disable extra features for a lighter footprint
+backup:
+  enabled: false
+metrics:
+  enabled: false

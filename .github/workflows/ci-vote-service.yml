@@ -1,0 +1,39 @@
+name: Deploy vote service to ACR
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "vote/**"  # <-- Only runs for this service
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to ACR using Service Principal
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.CLIENTID }}
+          password: ${{ secrets.CLIENTSECRET }}
+
+      - name: Build Docker image
+        run: |
+          docker build  \
+              --build-arg OPTION_A="${{ secrets.OPTION_A }}" \
+              --build-arg OPTION_B="${{ secrets.OPTION_B }}" \
+              --build-arg REDIS_HOST="${{ secrets.REDIS_HOST}}" \
+              --build-arg REDIS_PORT="${{ secrets.REDIS_PORT }}" \
+              --build-arg FLASK_PORT="${{ secrets.FLASK_PORT }}" \
+              -t vote-service ./vote
+
+      - name: Tag Docker image
+        run: |
+          docker tag vote-service ${{ secrets.ACR_LOGIN_SERVER }}/vote-service:latest
+        
+      - name: Push Docker image to Azure Container Registry
+        run: |
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/vote-service:latest

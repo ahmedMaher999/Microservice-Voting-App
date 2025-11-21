@@ -1,0 +1,3 @@
+environment = "staging"
+location    = "uaenorth"
+node_count  = 1
