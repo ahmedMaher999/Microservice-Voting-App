@@ -16,7 +16,7 @@ namespace Worker
         {
             try
             {
-                // ---------------------------------------------------------
+                
                 // CONFIGURATION: Read from Environment Variables
                 // ---------------------------------------------------------
                 string redisHost = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "redis";

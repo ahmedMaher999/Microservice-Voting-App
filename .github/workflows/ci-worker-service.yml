@@ -1,0 +1,41 @@
+name: Deploy worker service to ACR
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "worker/**"  # <-- Only runs for this service
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to ACR using Service Principal
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.CLIENTID }}
+          password: ${{ secrets.CLIENTSECRET }}
+
+      - name: Build Docker image
+        run: |
+          docker build  \
+              --build-arg POSTGRES_USER="${{ secrets.POSTGRES_USER }}" \
+              --build-arg POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+              --build-arg REDIS_HOST="${{ secrets.REDIS_HOST}}" \
+              --build-arg REDIS_PORT="${{ secrets.REDIS_PORT }}" \
+              --build-arg POSTGRES_DB="${{ secrets.POSTGRES_DB }}" \
+              --build-arg POSTGRES_HOST="${{ secrets.POSTGRES_HOST}}" \
+              --build-arg POSTGRES_PORT="${{ secrets.POSTGRES_PORT }}" \
+              -t worker-service ./worker
+
+      - name: Tag Docker image
+        run: |
+          docker tag worker-service ${{ secrets.ACR_LOGIN_SERVER }}/worker-service:latest
+        
+      - name: Push Docker image to Azure Container Registry
+        run: |
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/worker-service:latest
