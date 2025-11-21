@@ -18,7 +18,7 @@ io.on('connection', function (socket) {
   });
 });
 
-// <--- UPDATED DATABASE CONNECTION STRATEGY --->
+// UPDATED DATABASE CONNECTION STRATEGY 
 var username = process.env.POSTGRES_USER || 'postgres';
 var password = process.env.POSTGRES_PASSWORD|| 'postgres';
 var database = process.env.POSTGRES_DB || 'postgres';
